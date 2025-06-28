@@ -5,7 +5,7 @@ Main functionalities:
 -  Very basic user  sistem so that more than one user can use the website at the same time
 -  Tracking of both activity intervals (intervals where the timer is running with you on  it) and inactive intervals  (when you leave the web to do other stuff)
 -  Visualization of time spent on the web both by hours so you can see  your most productive study intervals and by days of the week so you can motivate yourself by comparing in between days
--  A scren saver that triggers after one minute so that oled screens do not burn out  when using  the website
+-  A screen saver that triggers after one minute so that oled screens do not burn out  when using  the website
 
 You  can test it for yourself in  estudio.basbat.es
 
