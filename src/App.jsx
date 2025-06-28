@@ -1011,12 +1011,6 @@ const toggleTrackingMode = () => {
       <div className="user-info">
         <h2>Usuario: {currentUser}</h2>
         <div className="user-controls">
-          <button 
-            className="clear-logs-btn"
-            onClick={handleClearLogs}
-          >
-            Limpiar Registros
-          </button>
           <HelpPopup />
           <button 
             className="fullscreen-btn"
