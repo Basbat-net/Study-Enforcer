@@ -1,0 +1,170 @@
+.user-selector {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px var(--shadow-color);
+  border: 1px solid var(--bg-tertiary);
+  max-width: 400px;
+  width: 90%;
+  margin: 2rem auto;
+}
+
+.user-selector h2 {
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.user-selector select {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.7em top 50%;
+  background-size: 1.2em auto;
+}
+
+.user-selector select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(9, 132, 227, 0.2);
+}
+
+.user-selector option {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 0.5em;
+}
+
+.create-user-btn {
+  background-color: var(--accent-blue);
+  color: white;
+  padding: 0.75em 1.2em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.create-user-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  background-color: #0876c9;
+}
+
+.create-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create-user-form input {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 0.75em 1em;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.create-user-form input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(9, 132, 227, 0.2);
+}
+
+.form-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.form-buttons button {
+  flex: 1;
+  padding: 0.75em 1.2em;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.form-buttons button[type="submit"] {
+  background-color: var(--accent-green);
+  color: white;
+}
+
+.form-buttons button[type="submit"]:hover {
+  background-color: #00a085;
+}
+
+.form-buttons .cancel-btn {
+  background-color: var(--accent-red);
+  color: white;
+}
+
+.form-buttons .cancel-btn:hover {
+  background-color: #ff5252;
+}
+
+@media (max-width: 480px) {
+  .user-selector {
+    padding: 1rem;
+    width: 90%;
+    margin: 1rem auto;
+    max-width: 280px;
+  }
+
+  .user-selector h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .user-selector select {
+    padding: 0.6em 1em;
+    font-size: 0.95rem;
+  }
+
+  .create-user-btn {
+    padding: 0.6em 1em;
+    font-size: 0.95rem;
+  }
+
+  .create-user-form input {
+    padding: 0.6em 1em;
+    font-size: 0.95rem;
+  }
+
+  .form-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-buttons button {
+    width: 100%;
+    padding: 0.6em 1em;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .user-selector {
+    width: 90%;
+    max-width: 320px;
+    padding: 1.25rem;
+  }
+} 

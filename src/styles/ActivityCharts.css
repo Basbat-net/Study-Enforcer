@@ -1,0 +1,244 @@
+.activity-charts {
+  width: 100%;
+  padding: 1.25rem;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  margin: 1.25rem auto;
+  max-width: var(--max-width-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.view-mode-controls,
+.display-mode-controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.view-mode-controls button {
+  padding: 0.5rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  min-width: 120px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+}
+
+.view-mode-controls button:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.view-mode-controls button.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+  font-weight: bold;
+}
+
+.week-selector {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.week-picker {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.75rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.week-picker:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.week-picker:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.chart-container {
+  width: 100%;
+  height: clamp(250px, 50vh, 400px);
+  margin-top: 1rem;
+}
+
+/* Estilos para el DatePicker */
+.react-datepicker {
+  font-size: 0.9rem !important;
+  background-color: var(--bg-secondary) !important;
+  border-color: var(--bg-tertiary) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.react-datepicker__header {
+  background-color: var(--bg-tertiary) !important;
+  border-bottom-color: var(--bg-tertiary) !important;
+  padding: 0.75rem 0 !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.react-datepicker__current-month {
+  color: var(--text-primary) !important;
+  font-weight: 500 !important;
+}
+
+.react-datepicker__day-name,
+.react-datepicker__day {
+  color: var(--text-primary) !important;
+  width: 2rem !important;
+  line-height: 2rem !important;
+  margin: 0.2rem !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--bg-tertiary) !important;
+  border-radius: 4px !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--accent-blue) !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+}
+
+/* Estilos para los elementos del gráfico */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.1) !important;
+}
+
+.recharts-text {
+  fill: var(--text-secondary) !important;
+  font-size: 0.8rem !important;
+}
+
+.recharts-legend-item-text {
+  color: var(--text-primary) !important;
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(255, 255, 255, 0.1) !important;
+}
+
+.recharts-tooltip-wrapper {
+  font-size: 0.9rem !important;
+}
+
+@media (max-width: 480px) {
+  .activity-charts {
+    padding: 0.75rem 0;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .chart-controls {
+    margin-bottom: 1rem;
+    padding: 0 0.75rem;
+  }
+
+  .view-mode-controls {
+    flex-direction: column;
+    padding: 0 0.75rem;
+  }
+
+  .view-mode-controls button {
+    width: 100%;
+    min-width: unset;
+    padding: 0.4rem 0.75rem;
+    margin: 0;
+  }
+
+  .week-picker {
+    max-width: 100%;
+    margin: 0 0.75rem;
+  }
+
+  .chart-container {
+    height: 300px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2rem;
+  }
+
+  .recharts-text {
+    font-size: 0.7rem !important;
+  }
+
+  .recharts-wrapper {
+    margin: 0;
+    padding: 0;
+    width: 100% !important;
+  }
+
+  .recharts-xAxis .recharts-cartesian-axis-tick-value {
+    display: none !important;
+  }
+
+  /* Ajustar el margen izquierdo del gráfico */
+  .recharts-wrapper .recharts-surface {
+    margin-left: -20px;
+  }
+
+  /* Ocultar la cuadrícula vertical en móvil para más claridad */
+  .recharts-cartesian-grid-vertical {
+    display: none !important;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .activity-charts {
+    padding: 1rem;
+    margin: 0;
+    border-radius: 8px;
+  }
+
+  .view-mode-controls button {
+    padding: 0.6rem 1rem;
+    min-width: 100px;
+  }
+
+  .chart-container {
+    height: 350px;
+    margin: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .recharts-wrapper {
+    margin: 0;
+    width: 100% !important;
+  }
+} 
