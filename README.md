@@ -1,12 +1,11 @@
-# React + Vite
+This is an example of a react study motivation web i designed a bit in a rush during exams season. It will track how  much time you  spend on  a given day studying by having the web always running so that you are not using the phone for other  nefarious  and mischevious motives
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Main functionalities:
+-  It has stay on tools so that even if your phone has automatic lock screen timers it just ignores them  (may not work on some  devices, this is first being tested on xiaomi ui)
+-  Very basic user  sistem so that more than one user can use the website at the same time
+-  Tracking of both activity intervals (intervals where the timer is running with you on  it) and inactive intervals  (when you leave the web to do other stuff)
+-  Visualization of time spent on the web both by hours so you can see  your most productive study intervals and by days of the week so you can motivate yourself by comparing in between days
+-  A scren saver that triggers after one minute so that oled screens do not burn out  when using  the website
 
-Currently, two official plugins are available:
+You  can test it for yourself in  estudio.basbat.es
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
