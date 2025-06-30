@@ -6,3 +6,83 @@
   "username": "Baselga"
 }
 
+{
+  "type": "active",
+  "duration": 5607309,
+  "timestamp": 1751292327323,
+  "endTimestamp": 1751297934632,
+  "username": "Baselga"
+}
+
+{
+  "type": "inactive",
+  "duration": 2631556,
+  "timestamp": 1751297934632,
+  "endTimestamp": 1751300566188,
+  "username": "Baselga"
+}
+
+{
+  "type": "active",
+  "duration": 12167,
+  "timestamp": 1751300566188,
+  "endTimestamp": 1751300578355,
+  "username": "Baselga"
+}
+
+{
+  "type": "active",
+  "duration": 4873559,
+  "timestamp": 1751300582687,
+  "endTimestamp": 1751305456246,
+  "username": "Baselga"
+}
+
+{
+  "type": "inactive",
+  "duration": 715536,
+  "timestamp": 1751305456246,
+  "endTimestamp": 1751306171782,
+  "username": "Baselga"
+}
+
+{
+  "type": "active",
+  "duration": 20324,
+  "timestamp": 1751306171782,
+  "endTimestamp": 1751306192106,
+  "username": "Baselga"
+}
+
+{
+  "type": "inactive",
+  "duration": 75259,
+  "timestamp": 1751306192106,
+  "endTimestamp": 1751306267365,
+  "username": "Baselga"
+}
+
+{
+  "type": "active",
+  "duration": 2399,
+  "timestamp": 1751306267365,
+  "endTimestamp": 1751306269764,
+  "username": "Baselga"
+}
+
+{
+  "type": "inactive",
+  "duration": 4925088,
+  "timestamp": 1751306269764,
+  "endTimestamp": 1751311194852,
+  "username": "Baselga"
+}
+
+{
+  "type": "active",
+  "duration": 6241731,
+  "timestamp": 1751311194852,
+  "endTimestamp": 1751317436583,
+  "username": "Baselga"
+}
+
