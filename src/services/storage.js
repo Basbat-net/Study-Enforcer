@@ -16,6 +16,11 @@
  * - Automatic state recovery
  */
 
+
+
+// ANOTACION IMPORTANTE
+// Storage y api no son redundantes, basicamente lo que hace la estructura general del codigo es
+// El app.jsx ejecuta todos los inputs del 
 import { ApiService } from './api';
 
 export class StorageService {
@@ -36,46 +41,125 @@ export class StorageService {
     return []; // Return empty array if no users found
   }
 
-  static async addUser(username) {
-    // Users are created automatically when they first save data
-    // This method exists for compatibility
-    return true;
-  }
-
   // < --- LOGS --- >
 
+
+
+
+
+
+  // getLogs()
+  // La funcion inicial que saca los logs del servidor sin que el jsx modifique cosas
+  // tambien chequea si hay logs guardados en localStorage que no se han podido enviar
+  // y los intenta enviar de nuevo
   static async getLogs(username) {
     if (!username) return [];
     
     try {
-      const logs = await ApiService.getLogs(username);
-      const validLogs = Array.isArray(logs) ? logs : [];
+      console.log(`[API] Attempting to fetch logs for user: ${username}`);
+      console.log(`[API] Request URL: ${API_URL}/logs/${username}`);
       
-      // Update our last known count
+      const response = await fetch(`${API_URL}/logs/${username}`); // la api hace un post request al server y el 
+                                                                   // server le devuelve el archivo de logs completo
+      console.log(`[API] Response status: ${response.status}`);
+      
+      // Esto es por si el post ha ido mal
+      if (!response.ok) {
+        console.error(`[API] Error response: ${response.status} ${response.statusText}`);
+        throw new Error(`Error al obtener logs: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log(`[API] Successfully fetched ${data.length} logs for user: ${username}`);
+      
+      // Chequeo dentro de localStorage del navegador por si ha habido algun log guardado que no se ha enviado
+      // por errores del servidor o simplemente factores adversos
+      try {
+        const failedLogsKey = `failed_logs_${username}`;
+        // la memoria del navegador va a guardar bajo el key de failed_logs_username los logs que no se han podido enviar
+        const failedLogs = JSON.parse(localStorage.getItem(failedLogsKey) || '[]');
+        // intentamos acceder a ese indice en localStorage y si existe, lo guardamos en failedLogs
+        if (failedLogs.length > 0) {
+          console.log(`[API] Found ${failedLogs.length} failed logs in localStorage`);
+          // si encuentra algo lo intenta enviar al servidor
+          for (const log of failedLogs) {
+            try {
+              await this.addLog(username, log);
+            } catch (error) {
+              console.error('[API] Error recovering failed log:', error);
+              continue;
+            }
+          }
+          //limpia el failed_logs_username de localStorage
+          localStorage.removeItem(failedLogsKey);
+          // como se han añadido cosas se vuelve a pedir al servidor el archivo entero
+          // esto posiblemente se podría mejorar pero para cuando acabe de dejarlo todo legible
+          const updatedResponse = await fetch(`${API_URL}/logs/${username}`);
+
+          if (updatedResponse.ok) {
+            const updatedData = await updatedResponse.json();
+            console.log(`[API] Successfully fetched ${updatedData.length} logs after recovery`);
+            return updatedData;
+          }
+        }
+      } catch (error) {
+        console.error('[API] Error checking failed logs:', error);
+      }
+      
+      // esto es donde se asigna el return de la anterior funcion
+      // return data;
+      
+      
+      const validLogs = Array.isArray(data) ? data : []; // para que una mala respuesta del post no tire un error
+      
+      // actualiza el conteo para cosas de que no se borren (creo)
       this.lastKnownLogCounts.set(username, validLogs.length);
       
       return validLogs;
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error al obtener logs:', error);
       return [];
     }
   }
 
+
+  // addLog()
+  // Está pensado para hacer append de logs a 
+  // través de una FIFO queue que basicamente encadenas 
+  // "promesas" de cosas para que no haya concurrencia de escritura
+  // en el archivo y no se sobreescriban cosas
   static async addLog(username, log) {
     if (!username) return;
     
     try {
-      // Create a queue for this user if it doesn't exist
+      // Cada usuario tiene una propia queue
       if (!this.logOperationQueue.has(username)) {
         this.logOperationQueue.set(username, Promise.resolve());
       }
 
-      // Add this operation to the queue
+      
+      // Esto utiliza una estructura de datos que es basicamente un map (dictionary) en el que cada indice es 
+      // una lista de promesas. Lo que haces con el dogido es reescribir el valor de la key con la lista de promesas
+      // mas la ultima accion que se ha hecho.
+
+      // ¿Qué es una lista de promesas?
+      // Basicamente es una cadena sucesiva de funciones que metes para que las acciones en vez de ejecutarse cada una a su bola
+      // se hagan de manera sucesiva y no se sobreescriban cosas. la estructura es algo como asi
+      //Promise.resolve()
+      //.then(() => step1())
+      //.then(() => step2())
+      //.then(() => step3());
+
       this.logOperationQueue.set(
         username,
+        // IMPORTANTE: La ejecucion del codigo se hace aqui con el then(), el await de abajo lo que va a 
+        // hacer es esperar a que se resuelva la ultima promesa de la cadena, y soltar un error en caso de que haya fallado algo
+        // internamente, basicamente la promesa está inicialmente en unresolved y va a triggerear el fin del await solo cuando cambie
+        // a resolved o rejected.
         this.logOperationQueue.get(username).then(async () => {
           try {
-            // Get current logs
+
             const currentLogs = await this.getLogs(username);
             const expectedCount = this.lastKnownLogCounts.get(username) || 0;
             
@@ -114,7 +198,7 @@ export class StorageService {
         })
       );
 
-      // Wait for the operation to complete
+      // Aqui lo que haces es awaiu
       await this.logOperationQueue.get(username);
     } catch (error) {
       console.error('Error al añadir log:', error);
@@ -129,27 +213,18 @@ export class StorageService {
     }
   }
 
-  static async clearLogs(username) {
-    if (!username) return;
-    
-    try {
-      // Clear both server and local backup
-      await ApiService.clearLogs(username);
-      localStorage.removeItem(`backup_logs_${username}`);
-      this.lastKnownLogCounts.set(username, 0);
-    } catch (error) {
-      console.error('Error al limpiar logs:', error);
-    }
-  }
 
   // < --- TIMER --- >
   
+  // saveTimerState()
+  // Basicamente esta funcion es una manera de llamar a la api asegurandose 
+  // de que los valores tienen buen formato
+  // posiblemente se pueda modificar para quitar lineas de codigo
   static async saveTimerState(username, state) {
-    if (!username) return;
+    if (!username) return; // esto es porsiaca creo que no puede ocurrir
     
     try {
-      const timeToSave = typeof state.time === 'number' ? state.time : 0;
-      
+      const timeToSave = typeof state.time === 'number' ? state.time : 0; // otro que creo que no pasa pero para q guarde solo numeros
       // Save timer state to server
       await ApiService.saveTimerState(username, {
         time: timeToSave,

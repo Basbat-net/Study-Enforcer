@@ -23,139 +23,41 @@ export class ApiService {
 
 // < --- LOGS --- >
 
-  static async getLogs(username) {
-    try {
-      console.log(`[API] Attempting to fetch logs for user: ${username}`);
-      console.log(`[API] Request URL: ${API_URL}/logs/${username}`);
-      
-      const response = await fetch(`${API_URL}/logs/${username}`);
-      console.log(`[API] Response status: ${response.status}`);
-      
-      if (!response.ok) {
-        console.error(`[API] Error response: ${response.status} ${response.statusText}`);
-        throw new Error(`Error al obtener logs: ${response.status} ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log(`[API] Successfully fetched ${data.length} logs for user: ${username}`);
-      
-      // Check for failed logs in localStorage
-      try {
-        const failedLogsKey = `failed_logs_${username}`;
-        const failedLogs = JSON.parse(localStorage.getItem(failedLogsKey) || '[]');
-        if (failedLogs.length > 0) {
-          console.log(`[API] Found ${failedLogs.length} failed logs in localStorage`);
-          // Try to append failed logs
-          for (const log of failedLogs) {
-            try {
-              await this.addLog(username, log);
-            } catch (error) {
-              console.error('[API] Error recovering failed log:', error);
-              continue;
-            }
-          }
-          // Clear failed logs after successful recovery
-          localStorage.removeItem(failedLogsKey);
-          // Fetch logs again to get the complete set
-          const updatedResponse = await fetch(`${API_URL}/logs/${username}`);
-          if (updatedResponse.ok) {
-            const updatedData = await updatedResponse.json();
-            console.log(`[API] Successfully fetched ${updatedData.length} logs after recovery`);
-            return updatedData;
-          }
-        }
-      } catch (error) {
-        console.error('[API] Error checking failed logs:', error);
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('[API] Error in getLogs:', error);
-      throw error;
-    }
-  }
 
-  static async saveLogs(username, logs) {
-    try {
-      console.log(`[API] Guardando ${logs.length} logs para ${username}`);
-      const response = await fetch(`${API_URL}/logs/${username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(logs),
-      });
-      if (!response.ok) {
-        console.error(`[API] Error al guardar logs: ${response.status} ${response.statusText}`);
-        throw new Error(`Error al guardar logs: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      console.log('[API] Logs guardados exitosamente');
-      return data;
-    } catch (error) {
-      console.error('[API] Error en saveLogs:', error);
-      // Store in localStorage as backup
-      try {
-        localStorage.setItem(`backup_logs_${username}`, JSON.stringify(logs));
-        console.log('[API] Logs saved to localStorage backup');
-      } catch (backupError) {
-        console.error('[API] Error saving to backup:', backupError);
-      }
-      throw error;
+// hay que cambiar toda mencion de saveLog por addLog !!!!!!!!!!!
+static async addLog(username, log) {
+  try {
+    console.log(`[API] Añadiendo nuevo log para ${username}:`, log);
+    const response = await fetch(`${API_URL}/logs/${username}/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(log),
+    });
+    if (!response.ok) {
+      console.error(`[API] Error al añadir log: ${response.status} ${response.statusText}`);
+      throw new Error(`Error al añadir log: ${response.status} ${response.statusText}`);
     }
+    const data = await response.json();
+    console.log('[API] Log añadido exitosamente');
+    return data;
+  } catch (error) {
+    console.error('[API] Error en addLog:', error);
+    // Store in localStorage as backup
+    try {
+      const backupKey = `failed_logs_${username}`;
+      const failedLogs = JSON.parse(localStorage.getItem(backupKey) || '[]');
+      failedLogs.push(log);
+      localStorage.setItem(backupKey, JSON.stringify(failedLogs));
+      console.log('[API] Log saved to localStorage backup');
+    } catch (backupError) {
+      console.error('[API] Error saving to backup:', backupError);
+    }
+    throw error;
   }
+}
 
-  static async addLog(username, log) {
-    try {
-      console.log(`[API] Añadiendo nuevo log para ${username}:`, log);
-      const response = await fetch(`${API_URL}/logs/${username}/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(log),
-      });
-      if (!response.ok) {
-        console.error(`[API] Error al añadir log: ${response.status} ${response.statusText}`);
-        throw new Error(`Error al añadir log: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      console.log('[API] Log añadido exitosamente');
-      return data;
-    } catch (error) {
-      console.error('[API] Error en addLog:', error);
-      // Store in localStorage as backup
-      try {
-        const backupKey = `failed_logs_${username}`;
-        const failedLogs = JSON.parse(localStorage.getItem(backupKey) || '[]');
-        failedLogs.push(log);
-        localStorage.setItem(backupKey, JSON.stringify(failedLogs));
-        console.log('[API] Log saved to localStorage backup');
-      } catch (backupError) {
-        console.error('[API] Error saving to backup:', backupError);
-      }
-      throw error;
-    }
-  }
-
-  static async clearLogs(username) {
-    try {
-      console.log(`[API] Limpiando logs para ${username}`);
-      const response = await fetch(`${API_URL}/logs/${username}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        console.error(`[API] Error al limpiar logs: ${response.status} ${response.statusText}`);
-        throw new Error(`Error al limpiar logs: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      console.log('[API] Logs limpiados exitosamente');
-      return data;
-    } catch (error) {
-      console.error('[API] Error en clearLogs:', error);
-      throw error;
-    }
-  }
 
 
 // < --- INTERVALOS INACTIVIDAD --- >
