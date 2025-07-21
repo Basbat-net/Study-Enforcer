@@ -5,10 +5,8 @@ import fs from 'fs/promises';
 import { existsSync, mkdirSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createWriteStream } from 'fs';
 import { promisify } from 'util';
 import { pipeline } from 'stream';
-import readline from 'readline';
 import lockfile from 'proper-lockfile';
 
 
@@ -138,6 +136,7 @@ async function addUserToList(username) {
     console.error(`Error adding user ${username} to list:`, error);
   }
 }
+
 
 // getPersistentUsers()
 // devuelve la lista de usuarios persistentes en el users.json como un array
