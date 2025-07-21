@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { StorageService } from '../services/storage';
+import { bridgeJsxServer } from '../services/bridgeJsxServer';
 import '../styles/UserSelector.css';
 
 export function UserSelector({ onUserSelect }) {
@@ -13,7 +13,7 @@ export function UserSelector({ onUserSelect }) {
     const loadUsers = async () => {
       try {
         setIsLoading(true);
-        const userList = await StorageService.getUsers();
+        const userList = await bridgeJsxServer.getUsers();
         setUsers(userList);
       } catch (error) {
         console.error('Error loading users:', error);
@@ -47,7 +47,7 @@ export function UserSelector({ onUserSelect }) {
 
   const refreshUsers = async () => {
     try {
-      const userList = await StorageService.getUsers();
+      const userList = await bridgeJsxServer.getUsers();
       setUsers(userList);
     } catch (error) {
       console.error('Error refreshing users:', error);
