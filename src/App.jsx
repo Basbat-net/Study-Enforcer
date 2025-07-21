@@ -20,8 +20,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { UserSelector } from './components/UserSelector'
 import { ActivityCharts } from './components/ActivityCharts'
 import { HelpPopup } from './components/HelpPopup'
-import { StorageService } from './services/storage'
-import { ApiService } from './services/api'
+import { bridgeJsxServer } from './services/bridgeJsxServer'
 import './App.css'
 import './styles/ActivityCharts.css'
 import './styles/ModeSelector.css'
@@ -31,6 +30,7 @@ export default function App() {
   // react lo sabe y rerenderiza el componente
   // las variables se cambian llamando a la funcion de la pareja de  la  dupla 
   // setTime por ejemplo, se  usa como setTime(10) que es como decir time = 10 pero con  react shit
+  
   const [time, setTime] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
   const [isPageVisible, setIsPageVisible] = useState(true)
@@ -77,6 +77,8 @@ export default function App() {
 
   // enterFullscreen()
   // Cambio a full screen
+
+  // COMPROBADA (La entiendo)
   const enterFullscreen = async () => {
     try {
       if (document.documentElement.requestFullscreen) {
@@ -93,6 +95,8 @@ export default function App() {
 
   // exitFullscreen()
   // Salida de full screen
+
+  // COMPROBADA (La entiendo)
   const exitFullscreen = async () => {
     try {
       if (document.exitFullscreen) {
@@ -109,19 +113,17 @@ export default function App() {
 
   // toggleFullscreen()
   // Es un toggle  osea  q mas  quieres q diga
-  const toggleFullscreen = async () => {
-    if (isFullscreen) {
-      await exitFullscreen();
-    } else {
-      await enterFullscreen();
-    }
-  };
+
+  // COMPROBADA (La entiendo)
+  const toggleFullscreen = async () => await (isFullscreen ? exitFullscreen() : enterFullscreen());
 
 // < --- SCREENSAVER --- >
 
   // dismissScreenSaver()
   // Desactiva el screensaver y hay un intervalo en el que no se  pueude pulsar 
   // para  que no se pueda pulsar  el boton de  reinicio
+
+  // COMPROBADA (La entiendo)
   const dismissScreenSaver = () => {
     if (isScreenSaverActive) {
       setIsScreenSaverActive(false);
@@ -142,7 +144,7 @@ export default function App() {
   // handleStart()
   // Manejo del boton de start del timer
   const handleStart = async () => {
-    if (isScreenSaverJustDismissed) return; // Boton no funciona si no screensaver
+    if (isScreenSaverJustDismissed) return; // Para que no puedas pulsar el boton si acabas de quitarte el screensaver
     
     const currentTime = Date.now();
     setIsRunning(true);
@@ -153,7 +155,7 @@ export default function App() {
     await requestWakeLock(); // para que no  se apague el movil
     startKeepAlive(); // funcion que sigue pidiendolo
     //  Storage.js guarda el estado del time en timer_states.json
-    await StorageService.saveTimerState(currentUser, {
+    await bridgeJsxServer.saveTimerState(currentUser, {
       time,
       lastUpdate: currentTime,
       wasPaused: false,
@@ -189,7 +191,7 @@ export default function App() {
           endTimestamp: currentTime,
           username: currentUser
         };
-        await StorageService.addLog(currentUser, activeLog);
+        await bridgeJsxServer.addLog(currentUser, activeLog);
         // lo de  prev es para asegurarte  que  te  pasa el valor que debería basicamente
         // en vez de  puntero es una  copia del valor  (creo)
         setActivityLogs(prev => [...prev, activeLog]);
@@ -206,7 +208,7 @@ export default function App() {
           endTimestamp: currentTime,
           username: currentUser
         };
-        await StorageService.addLog(currentUser, inactiveLog);
+        await bridgeJsxServer.addLog(currentUser, inactiveLog);
         setActivityLogs(prev => [...prev, inactiveLog]);
         setInactiveTime(prev => prev + inactiveDuration);
       }
@@ -216,7 +218,7 @@ export default function App() {
     setLastActivityStart(null);
     setLastInactivityStart(null);
 
-    StorageService.saveTimerState(currentUser, {
+    bridgeJsxServer.saveTimerState(currentUser, {
       time,
       lastUpdate: currentTime,
       wasPaused: true,
@@ -248,7 +250,7 @@ export default function App() {
             endTimestamp: currentTime,
             username: currentUser
           };
-          await StorageService.addLog(currentUser, activeLog);
+          await bridgeJsxServer.addLog(currentUser, activeLog);
           setActivityLogs(prev => [...prev, activeLog]);
           setActiveTime(prev => prev + activeDuration);
         } else {
@@ -261,7 +263,7 @@ export default function App() {
             endTimestamp: currentTime,
             username: currentUser
           };
-          await StorageService.addLog(currentUser, inactiveLog);
+          await bridgeJsxServer.addLog(currentUser, inactiveLog);
           setActivityLogs(prev => [...prev, inactiveLog]);
           setInactiveTime(prev => prev + inactiveDuration);
         }
@@ -274,7 +276,7 @@ export default function App() {
     setLastActivityStart(null);
     setLastInactivityStart(null);
     
-    StorageService.saveTimerState(currentUser, {
+    bridgeJsxServer.saveTimerState(currentUser, {
       time: 0,
       lastUpdate: currentTime,
       wasPaused: true,
@@ -294,7 +296,7 @@ export default function App() {
   // Limpia todos los registros de un usuario (debería borrarla)
   const handleClearLogs = async () => {
     if (window.confirm(`¿Estás seguro de que quieres borrar todos los registros de ${currentUser}? Esta acción no se puede deshacer.`)) {
-      await StorageService.clearLogs(currentUser); // en storage.js
+      await bridgeJsxServer.clearLogs(currentUser); // en storage.js
       setActivityLogs([]);
       setActiveTime(0);
       setInactiveTime(0);
@@ -308,7 +310,7 @@ export default function App() {
       const backupLogsStr = localStorage.getItem(`backup_logs_${username}`);
       if (backupLogsStr) {
         const backupLogs = JSON.parse(backupLogsStr);
-        const serverLogs = await ApiService.getLogs(username);
+        const serverLogs = await bridgeJsxServer.getLogs(username);
         
         // Compare backup with server logs to find missing entries
         const missingLogs = backupLogs.filter(backupLog => 
@@ -321,7 +323,7 @@ export default function App() {
         if (missingLogs.length > 0) {
           console.log(`Recovering ${missingLogs.length} missing logs for ${username}`);
           const updatedLogs = [...serverLogs, ...missingLogs];
-          await ApiService.saveLogs(username, updatedLogs);
+          await bridgeJsxServer.saveLogs(username, updatedLogs);
           setActivityLogs(updatedLogs);
           
           // Update totals
@@ -450,7 +452,7 @@ const handleUserSelect = async (username) => {
         endTimestamp: currentTime,
         username: currentUser
       };
-      await StorageService.addLog(currentUser, activeLog);
+      await bridgeJsxServer.addLog(currentUser, activeLog);
       setActivityLogs(prev => [...prev, activeLog]);
       setActiveTime(prev => prev + activeDuration);
     } else if (!isActiveTrackingMode && lastActivityStart) {
@@ -463,7 +465,7 @@ const handleUserSelect = async (username) => {
         endTimestamp: currentTime,
         username: currentUser
       };
-      await StorageService.addLog(currentUser, inactiveLog);
+      await bridgeJsxServer.addLog(currentUser, inactiveLog);
       setActivityLogs(prev => [...prev, inactiveLog]);
       setInactiveTime(prev => prev + inactiveDuration);
     }
@@ -476,7 +478,7 @@ const handleUserSelect = async (username) => {
   
   // Cargar los registros del usuario seleccionado
   if (username) {
-    const userLogs = await StorageService.getLogs(username);
+    const userLogs = await bridgeJsxServer.getLogs(username);
     setActivityLogs(userLogs);
     
     // Calcular tiempos totales
@@ -493,14 +495,14 @@ const handleUserSelect = async (username) => {
     setInactiveTime(totals.inactive);
 
     // Verificar el estado del temporizador guardado
-    const timerState = await StorageService.getTimerState(username);
+    const timerState = await bridgeJsxServer.getTimerState(username);
     if (!timerState || !timerState.time) {
       // Si no hay estado guardado o el tiempo es 0/null/undefined, inicializar en 0
       setTime(0);
       setIsRunning(false);
       setLastActivityStart(null);
       setLastInactivityStart(null);
-      await StorageService.saveTimerState(username, {
+      await bridgeJsxServer.saveTimerState(username, {
         time: 0,
         lastUpdate: currentTime,
         wasRunning: false,
@@ -531,7 +533,7 @@ const handleUserSelect = async (username) => {
         }
         
         // Guardar el nuevo estado con la hora actual
-        await StorageService.saveTimerState(username, {
+        await bridgeJsxServer.saveTimerState(username, {
           time: timerState.time || 0,
           lastUpdate: currentTime,
           wasRunning: true,
@@ -582,7 +584,7 @@ const toggleTrackingMode = () => {
       endTimestamp: currentTime,
       username: currentUser
     };
-    StorageService.addLog(currentUser, activeLog);
+    bridgeJsxServer.addLog(currentUser, activeLog);
     setActivityLogs(prev => [...prev, activeLog]);
     setActiveTime(prev => prev + activeDuration);
   }
@@ -591,7 +593,7 @@ const toggleTrackingMode = () => {
   setLastActivityStart(isRunning ? currentTime : null);
   
   // Save the new mode preference
-  StorageService.saveTimerState(currentUser, {
+  bridgeJsxServer.saveTimerState(currentUser, {
     time,
     lastUpdate: currentTime,
     wasRunning: isRunning,
@@ -613,15 +615,15 @@ const toggleTrackingMode = () => {
           await recoverBackupLogs(currentUser);
           
           // Verificar y finalizar cualquier intervalo de inactividad pendiente
-          const { inactiveLog } = await ApiService.endInactiveInterval(currentUser, currentTime);
+          const { inactiveLog } = await bridgeJsxServer.endInactiveInterval(currentUser, currentTime);
           
           // Cargar los logs del usuario directamente desde la API
-          let userLogs = await ApiService.getLogs(currentUser);
+          let userLogs = await bridgeJsxServer.getLogs(currentUser);
           
           // Si había un intervalo de inactividad pendiente, añadirlo a los logs
           if (inactiveLog) {
             userLogs = [...userLogs, inactiveLog];
-            await ApiService.saveLogs(currentUser, userLogs);
+            await bridgeJsxServer.saveLogs(currentUser, userLogs);
           }
           
           console.log('Loaded logs:', userLogs);
@@ -641,7 +643,7 @@ const toggleTrackingMode = () => {
           setInactiveTime(totals.inactive);
 
           // Restaurar estado del temporizador
-          const timerState = await StorageService.getTimerState(currentUser);
+          const timerState = await bridgeJsxServer.getTimerState(currentUser);
           if (timerState) {
             setTime(timerState.time || 0);
             setIsActiveTrackingMode(timerState.isActiveTrackingMode ?? true);
@@ -659,7 +661,7 @@ const toggleTrackingMode = () => {
           console.error('Error loading user state:', error);
           // If there's an error, try to load logs directly from the API
           try {
-            const userLogs = await ApiService.getLogs(currentUser);
+            const userLogs = await bridgeJsxServer.getLogs(currentUser);
             setActivityLogs(userLogs);
             
             const totals = userLogs.reduce((acc, log) => {
@@ -701,7 +703,7 @@ const toggleTrackingMode = () => {
             endTimestamp: currentTime,
             username: currentUser
           };
-          await StorageService.addLog(currentUser, activeLog);
+          await bridgeJsxServer.addLog(currentUser, activeLog);
           
           // Iniciar intervalo de inactividad y guardarlo
           const inactiveLog = {
@@ -711,10 +713,10 @@ const toggleTrackingMode = () => {
             endTimestamp: null,
             username: currentUser
           };
-          await StorageService.addLog(currentUser, inactiveLog);
+          await bridgeJsxServer.addLog(currentUser, inactiveLog);
         }
         
-        StorageService.saveTimerState(currentUser, {
+        bridgeJsxServer.saveTimerState(currentUser, {
           time,
           lastUpdate: currentTime,
           wasRunning: true,
@@ -873,7 +875,7 @@ const toggleTrackingMode = () => {
 
       setTime(prevTime => {
         const newTime = prevTime + delta;
-        StorageService.saveTimerState(currentUser, {
+        bridgeJsxServer.saveTimerState(currentUser, {
           time: newTime,
           lastUpdate: now,
           wasRunning: true,
@@ -930,12 +932,12 @@ const toggleTrackingMode = () => {
               };
               
               // First save to local storage as backup
-              const currentLogs = await StorageService.getLogs(currentUser);
+              const currentLogs = await bridgeJsxServer.getLogs(currentUser);
               const updatedLogs = [...currentLogs, activeLog];
               localStorage.setItem(`backup_logs_${currentUser}`, JSON.stringify(updatedLogs));
               
               // Then try to save to server
-              await StorageService.addLog(currentUser, activeLog);
+              await bridgeJsxServer.addLog(currentUser, activeLog);
               setActivityLogs(prev => [...prev, activeLog]);
               setActiveTime(prev => prev + activeDuration);
               
@@ -957,12 +959,12 @@ const toggleTrackingMode = () => {
               };
               
               // First save to local storage as backup
-              const currentLogs = await StorageService.getLogs(currentUser);
+              const currentLogs = await bridgeJsxServer.getLogs(currentUser);
               const updatedLogs = [...currentLogs, inactiveLog];
               localStorage.setItem(`backup_logs_${currentUser}`, JSON.stringify(updatedLogs));
               
               // Then try to save to server
-              await StorageService.addLog(currentUser, inactiveLog);
+              await bridgeJsxServer.addLog(currentUser, inactiveLog);
               setActivityLogs(prev => [...prev, inactiveLog]);
               setInactiveTime(prev => prev + inactiveDuration);
               
