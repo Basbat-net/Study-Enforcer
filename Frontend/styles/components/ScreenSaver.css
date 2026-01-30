@@ -1,0 +1,54 @@
+/* Screen Saver Styles */
+
+.screensaver-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  cursor: pointer;
+}
+
+.screensaver-element {
+  position: absolute;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #000;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s ease;
+}
+
+.screensaver-time {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.screensaver-user {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.screensaver-instructions {
+  position: absolute;
+  color: #fff;
+  font-size: 12px;
+  opacity: 0.6;
+  text-align: center;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.screensaver-title {
+  margin-bottom: 5px;
+}
+
+.screensaver-hint {
+  font-size: 10px;
+}

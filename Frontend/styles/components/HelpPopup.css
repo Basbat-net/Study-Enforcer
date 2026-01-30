@@ -1,0 +1,161 @@
+.help-container {
+  display: inline-block;
+}
+
+.help-button {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.help-button:hover {
+  background-color: #0876c9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.popup-content {
+  background-color: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+}
+
+.popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.popup-content::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb {
+  background: var(--accent-blue);
+  border-radius: 4px;
+}
+
+.popup-content::-webkit-scrollbar-thumb:hover {
+  background: #0876c9;
+}
+
+.popup-content h2 {
+  margin-top: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.popup-content h3 {
+  color: var(--text-secondary);
+  margin-top: 1.25rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.popup-content p, 
+.popup-content ul {
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin: 0.75rem 0;
+}
+
+.popup-content ul {
+  padding-left: 1.5rem;
+}
+
+.popup-content li {
+  margin-bottom: 0.5rem;
+}
+
+.popup-content section {
+  margin-bottom: 1.5rem;
+}
+
+.popup-content section:last-child {
+  margin-bottom: 0;
+}
+
+.close-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+.close-button:hover {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 480px) {
+  .popup-overlay {
+    padding: 0.5rem;
+  }
+
+  .popup-content {
+    padding: 1rem;
+    max-height: 90vh;
+  }
+
+  .popup-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .popup-content h3 {
+    font-size: 1rem;
+    margin-top: 1rem;
+  }
+
+  .popup-content p,
+  .popup-content ul {
+    font-size: 0.9rem;
+  }
+
+  .popup-content ul {
+    padding-left: 1.25rem;
+  }
+
+  .help-container {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .popup-content {
+    padding: 1.25rem;
+    max-width: 500px;
+  }
+}

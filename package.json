@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "start": "concurrently \"npm run dev\" \"cd server && node server.js\"",
+    "start": "concurrently \"npm run dev\" \"cd Backend && node server.js\"",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
