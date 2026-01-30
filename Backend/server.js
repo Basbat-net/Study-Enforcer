@@ -33,12 +33,13 @@ await fs.mkdir(DATABASE_DIR, { recursive: true });
 await fs.mkdir(USERS_DATA_DIR, { recursive: true });
 
 // Asegura que existan los archivos en Database/
+// Usuarios
 try {
   await fs.access(USERS_FILE);
 } catch (error) {
   await fs.writeFile(USERS_FILE, JSON.stringify([], null, 2));
 }
-
+// Intervalos inactivos
 try {
   await fs.access(INACTIVE_INTERVALS_FILE);
 } catch (error) {
@@ -47,7 +48,7 @@ try {
 
 // < -------------------------------------- ROUTES -------------------------------------- >
 
-// Rutas (users en /api/users para que GET /api/users devuelva la lista)
+// IMPORTANTE!! AQUI SE MONTAN LAS RUTAS
 app.use('/api/logs', logsRoutes);
 app.use('/api/users', usersRoutes);
 app.get('/api/ping', (req, res) => res.json({ status: 'ok', timestamp: Date.now() }));

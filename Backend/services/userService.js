@@ -2,10 +2,9 @@
 
 // Funciones importantes:
 //  - validateTimerState - Valida y normaliza el estado del timer
-//  - listUserDirectories - Lista los directorios de los usuarios
-//  - migrateExistingUsers - (no se que hace)
+//  - listUserDirectories - Saca todos los usuarios que tienen directorio en database
 //  - addUserToList - Añade un usuario a la lista persistente
-//  - getPersistentUsers - (no se que hace)
+//  - getPersistentUsers - Saca un array con todos los usuarios
 
 import fs from 'fs/promises';
 import { USERS_FILE, USERS_DATA_DIR } from '../config/index.js';
@@ -31,7 +30,7 @@ export function validateTimerState(state) {
   };
 }
 
-// saca todos los directorios para cada usuario
+// saca un array con todos los usuarios que tienen un directorio en database
 export async function listUserDirectories() {
   try {
     const entries = await fs.readdir(USERS_DATA_DIR, { withFileTypes: true });
@@ -39,20 +38,6 @@ export async function listUserDirectories() {
   } catch (error) {
     if (error.code === 'ENOENT') return [];
     throw error;
-  }
-}
-
-// esto no se muy bien que hace
-export async function migrateExistingUsers() {
-  try {
-    console.log('[UserService] Migrating existing users to persistent list...');
-    const dirUsers = await listUserDirectories();
-    for (const username of dirUsers) {
-      await addUserToList(username);
-    }
-    console.log(`[UserService] Migration complete. Found ${dirUsers.length} existing users.`);
-  } catch (error) {
-    console.error('[UserService] Error during user migration:', error);
   }
 }
 
@@ -72,7 +57,7 @@ export async function addUserToList(username) {
   }
 }
 
-// esto tampoco se muy bien que hace
+// Saca el array de todos los usuarios en el servidor
 export async function getPersistentUsers() {
   try {
     await ensureFileExists(USERS_FILE, '[]');
