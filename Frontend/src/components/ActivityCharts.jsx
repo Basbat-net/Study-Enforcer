@@ -1,5 +1,5 @@
 // Gestion de los graficos de actividad
-
+// prueba
 // Funciones importantes:
 //  - formatTimeValue, // Formatea el tiempo
 //  - getStartOfWeek, // Obtiene el inicio de la semana
