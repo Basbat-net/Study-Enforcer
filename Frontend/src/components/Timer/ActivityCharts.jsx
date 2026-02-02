@@ -1,33 +1,12 @@
 // Gestion de los graficos de actividad
-// prueba
-// Funciones importantes:
-//  - formatTimeValue, // Formatea el tiempo
-//  - getStartOfWeek, // Obtiene el inicio de la semana
-//  - getEndOfWeek, // Obtiene el fin de la semana
-
-// Componentes:
-// - logEntry: Los cuadrados de cada log, se pone formato y cuanto duran
-//             Se meten dentro de un scroll en app.jsx
-// - chartComponent: El componente que genera el grafico exclusivamente, la logica la 
-//                   cambia el useState viewMode  (explicado en el componente)
-// - activityCharts: El componente general que contiene el chartComponent y los 
-//                   botones para el tipo de grafico y el DatePicker para el rango
-
+//
 // Estilos usados:
-// - ActivityCharts.css
-import { useState, useMemo, useCallback, memo } from 'react';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+// - ActivityCharts.css (importado globalmente en App.jsx)
 
+import { memo, useCallback, useMemo, useState } from 'react';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const DAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
@@ -62,31 +41,8 @@ const getEndOfWeek = (date) => {
   return d;
 };
 
-// Los componentes fisicos de cada entrada de log
-const LogEntry = memo(({ data, index, style }) => {
-  const log = data[index];
-  const formattedDuration = formatTimeValue(log.duration / (1000 * 60));
-
-  return (
-    <div style={style} className={`log-entry ${log.type}`}>
-      <span className="log-type">
-        {log.type === 'active' ? '✓ Activo' : '✗ Inactivo'}
-      </span>
-      <span className="log-duration">{formattedDuration}</span>
-      <span className="log-time">
-        {new Date(log.timestamp).toLocaleTimeString()} - {new Date(log.endTimestamp).toLocaleTimeString()}
-      </span>
-    </div>
-  );
-});
-
 // Componente memoizado para el gráfico
-const ChartComponent = memo(({ 
-  chartData, 
-  viewMode,
-  formatYAxis, 
-  formatTooltip 
-}) => {
+const ChartComponent = memo(({ chartData, viewMode, formatYAxis, formatTooltip }) => {
   return (
     <ResponsiveContainer width="100%" height={400}>
       <BarChart
@@ -99,19 +55,19 @@ const ChartComponent = memo(({
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis 
+        <XAxis
           dataKey="name"
           angle={viewMode === 'hourly' ? -45 : 0}
           textAnchor={viewMode === 'hourly' ? 'end' : 'middle'}
           height={60}
         />
         <YAxis tickFormatter={formatYAxis} />
-        <Tooltip 
+        <Tooltip
           formatter={formatTooltip}
           contentStyle={{
             backgroundColor: 'var(--bg-secondary)',
             border: '1px solid var(--bg-tertiary)',
-            color: 'var(--text-primary)'
+            color: 'var(--text-primary)',
           }}
           separator=""
         />
@@ -135,30 +91,32 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
   const chartData = useMemo(() => {
     if (!Array.isArray(logs) || logs.length === 0 || !username) {
       if (viewMode === 'weekly') {
-        return DAYS.map(day => ({ name: day, estudio: 0 }));
+        return DAYS.map((day) => ({ name: day, estudio: 0 }));
       }
-      return Array(24).fill(0).map((_, i) => ({ 
-        name: `${String(i).padStart(2, '0')}:00`,
-        estudio: 0
-      }));
+      return Array(24)
+        .fill(0)
+        .map((_, i) => ({
+          name: `${String(i).padStart(2, '0')}:00`,
+          estudio: 0,
+        }));
     }
 
     // Filtrar logs por usuario
-    const userLogs = logs.filter(log => log.username === username);
+    const userLogs = logs.filter((log) => log.username === username);
 
     // Caso semanal
     if (viewMode === 'weekly') {
       const startOfWeek = getStartOfWeek(selectedDate);
       const endOfWeek = getEndOfWeek(selectedDate);
-      
+
       // Hace un map de los dias
-      const weeklyData = DAYS.map(day => ({
+      const weeklyData = DAYS.map((day) => ({
         name: day,
-        estudio: 0
+        estudio: 0,
       }));
 
       // va sumando los user logs que caen en el rango del dia
-      userLogs.forEach(log => {
+      userLogs.forEach((log) => {
         const logDate = new Date(log.timestamp);
         if (logDate >= startOfWeek && logDate <= endOfWeek && log.type === 'active') {
           weeklyData[logDate.getDay()].estudio += log.duration / (1000 * 60);
@@ -169,14 +127,15 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
     }
 
     // Caso por horas
-    const hourlyIntervals = Array(24).fill(0).map((_, index) => ({
-      name: `${String(index).padStart(2, '0')}:00`,
-      intervals: [],
-      estudio: 0
-    }));
+    const hourlyIntervals = Array(24)
+      .fill(0)
+      .map((_, index) => ({
+        name: `${String(index).padStart(2, '0')}:00`,
+        estudio: 0,
+      }));
 
     // Va sumando los user logs que caen en el rango de la hora
-    userLogs.forEach(log => {
+    userLogs.forEach((log) => {
       const startDate = new Date(log.timestamp);
       const endDate = new Date(log.endTimestamp || log.timestamp);
       const startHour = startDate.getHours();
@@ -188,31 +147,27 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
           hourlyIntervals[startHour].estudio += duration;
         }
       } else {
-        // Calcular la diferencia real en horas teniendo en cuenta los días
+        // Distribuir el tiempo proporcionalmente por cada hora
         const startTime = startDate.getTime();
         const endTime = endDate.getTime();
-        
-        // Distribuir el tiempo proporcionalmente por cada hora
+
         let currentTime = startTime;
         while (currentTime < endTime) {
           const currentHour = new Date(currentTime).getHours();
           const nextHourStart = new Date(currentTime);
           nextHourStart.setHours(currentHour + 1, 0, 0, 0);
-          
+
           const timeInThisHour = Math.min(nextHourStart.getTime(), endTime) - currentTime;
           if (log.type === 'active') {
             hourlyIntervals[currentHour].estudio += timeInThisHour / (1000 * 60);
           }
-          
+
           currentTime = nextHourStart.getTime();
         }
       }
     });
 
-    return hourlyIntervals.map(hour => ({
-      name: hour.name,
-      estudio: hour.estudio
-    }));
+    return hourlyIntervals;
   }, [logs, viewMode, selectedDate, username]);
 
   //Movidas varias de formato
@@ -220,28 +175,29 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
     return formatTimeValue(value);
   }, []);
 
-  const formatTooltip = useCallback((value, name, props) => {
+  const formatTooltip = useCallback((value) => {
     if (!value || value === 0) return ['', ''];
-    
+
     const minutes = Math.floor(value);
     const seconds = Math.floor((value - minutes) * 60);
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    
-    const timeStr = [
-      hours > 0 ? `${hours}h` : '',
-      remainingMinutes > 0 ? `${remainingMinutes}m` : '',
-      seconds > 0 ? `${seconds}s` : ''
-    ].filter(Boolean).join(' ') || '0s';
-    
+
+    const timeStr =
+      [
+        hours > 0 ? `${hours}h` : '',
+        remainingMinutes > 0 ? `${remainingMinutes}m` : '',
+        seconds > 0 ? `${seconds}s` : '',
+      ]
+        .filter(Boolean)
+        .join(' ') || '0s';
+
     return [`Tiempo de estudio: ${timeStr}`, ''];
   }, []);
 
   return (
     <div className="activity-charts">
       <div className="chart-controls">
-
-        {/* Los botones para cambiar*/}
         <div className="view-mode-controls">
           <button
             className={viewMode === 'hourly' ? 'active' : ''}
@@ -260,7 +216,7 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
           <div className="week-selector">
             <DatePicker
               selected={selectedDate}
-              onChange={date => setSelectedDate(date)}
+              onChange={(date) => setSelectedDate(date)}
               dateFormat="dd/MM/yyyy"
               placeholderText="Seleccionar semana"
               className="week-picker"
@@ -269,13 +225,10 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
         )}
       </div>
 
-      {/* El componente como tal del grafico */}
-      {/* el viewMode es el que cambia si es por horas o por dias */}
       <div className="chart-container">
         <ChartComponent
           chartData={chartData}
-          viewMode={viewMode} 
-
+          viewMode={viewMode}
           formatYAxis={formatYAxis}
           formatTooltip={formatTooltip}
         />
@@ -283,3 +236,4 @@ export const ActivityCharts = memo(function ActivityCharts({ logs, username }) {
     </div>
   );
 });
+

@@ -1,10 +1,10 @@
 // El boton de si quieres el modo de tracking activo o no
-
+//
 // Estilos usados:
 // - ModeSelector.css
 
 import React from 'react';
-import '../../styles/components/ModeSelector.css';
+import '../../../styles/components/ModeSelector.css';
 
 export function ModeSelector({ isActiveTrackingMode, onToggle, disabled }) {
   return (
@@ -23,3 +23,4 @@ export function ModeSelector({ isActiveTrackingMode, onToggle, disabled }) {
     </div>
   );
 }
+

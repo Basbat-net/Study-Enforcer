@@ -98,6 +98,47 @@ body {
   padding: 1rem;
 }
 
+/* Space for fixed bottom bar */
+.app-shell {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  background: rgba(26, 26, 26, 0.92);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--bg-tertiary);
+  z-index: 9999;
+}
+
+.bottom-bar__item {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.bottom-bar__item:hover {
+  transform: translateY(-1px);
+}
+
+.bottom-bar__item.is-active {
+  background: var(--accent-blue);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: white;
+}
+
 /* Selector de usuario responsivo */
 .user-selector {
   width: 100%;
